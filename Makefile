@@ -26,6 +26,7 @@ lean:
 	@echo -e "\e[1;35m💜💜💜I'M ON THE LEAN FOR REAL (YEAH-YEAH)💜💜💜\e[0m"
 	@echo -e "\e[1;35m💜💜💜💜💜💜💜💜💜💜💜💜💜💜💜💜💜💜💜💜💜💜💜💜\e[0m"
 	@echo -e "\e[1;35m💜💜💜💜💜💜💜💜!!LEANEANEAN!!💜💜💜💜💜💜💜💜💜\e[0m"
+	@echo -e "\e[1;35m💜💜💜💜💜💜💜💜💜💜💜💜💜💜💜💜💜💜💜💜💜💜💜💜\e[0m"
 	@exit 1
 
 .PHONY: all build install uninstall clean lean

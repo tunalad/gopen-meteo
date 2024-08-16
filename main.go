@@ -13,6 +13,9 @@ import (
 /*
    I am well aware that I can get data for both current and daily weather
    by sending one request, but I just don't really care.
+
+   creds:
+        https://gist.github.com/stellasphere/9490c195ed2b53c707087c8c2db4ec0c
 */
 
 const urlBase = "https://api.open-meteo.com/v1/forecast?latitude=%f&longitude=%f&timezone=auto"
@@ -131,31 +134,44 @@ func getCurrentWeather(latitude float32, longitude float32) CurrentWeather {
 }
 
 func getEmoji(wmo int) string {
-	wmoWeatherMap := map[string]string{
-		"00-19": "🌦",
-		"20-29": "⛈",
-		"30-39": "🏜",
-		"40-49": "🌫️",
-		"50-59": "🌦",
-		"60-69": "☔",
-		"70-79": "❄️",
-		"80-99": "⛈",
+	// forced chatgpt to do it because ain't nobody got time for this xd
+	wmoWeatherMap := map[int]string{
+		0:  "☀️", // Clear sky
+		1:  "⛱",  // Few clouds
+		2:  "☁️", // Scattered clouds
+		3:  "☁️", // Broken clouds
+		45: "🌀",  // Tropical storm
+		48: "🌀",  // Tropical storm
+		51: "🌧",  // Light intensity shower rain
+		53: "🌧",  // Shower rain
+		55: "🌧",  // Heavy intensity shower rain
+		56: "🌨",  // Light rain and snow
+		57: "🌨",  // Snow
+		61: "🌧",  // Light rain
+		63: "🌧",  // Moderate rain
+		65: "🌧",  // Heavy intensity rain
+		66: "🌨",  // Light intensity drizzle
+		67: "🌨",  // Drizzle
+		71: "🌨",  // Light snow
+		73: "🌨",  // Snow
+		75: "🌨",  // Heavy snow
+		77: "🌨",  // Sleet
+		80: "🌧",  // Light shower rain
+		81: "🌧",  // Shower rain
+		82: "🌧",  // Heavy shower rain
+		85: "🌨",  // Light rain and snow
+		86: "🌨",  // Snow showers
+		95: "⛈",  // Thunderstorm
+		96: "⛈",  // Light thunderstorm
+		99: "⛈",  // Heavy thunderstorm
 	}
 
-	// check each range
-	for key, emoji := range wmoWeatherMap {
-		var min, max int
-		_, err := fmt.Sscanf(key, "%d-%d", &min, &max)
-		if err != nil {
-			continue
-		}
-		if wmo >= min && wmo <= max {
-			return emoji
-		}
+	emoji, exists := wmoWeatherMap[wmo]
+	if !exists {
+		return "❓"
 	}
 
-	// default case if no match is found
-	return "❓"
+	return emoji
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
