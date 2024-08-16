@@ -182,20 +182,20 @@ func main() {
 
 		if place == (PlaceGeocode{}) {
 			fmt.Println("Place not found.")
-			os.Exit(1)
+		} else {
+			daily := getDailyWeather(place.Latitude, place.Longitude)
+			current := getCurrentWeather(place.Latitude, place.Longitude)
+
+			fmt.Printf("%s, %s\n", place.Name, place.Country)
+			fmt.Println(strings.Repeat("-", 10))
+
+			fmt.Println("Current:\t", current.Temperature)
+			fmt.Println("Feels like:\t", current.FeelsLike)
+			fmt.Println("Icon:\t\t", getEmoji(daily.WeatherCode[0]))
+			fmt.Println("Max:\t\t", daily.Max[0])
+			fmt.Println("Min:\t\t", daily.Min[0])
 		}
 
-		daily := getDailyWeather(place.Latitude, place.Longitude)
-		current := getCurrentWeather(place.Latitude, place.Longitude)
-
-		fmt.Printf("%s, %s\n", place.Name, place.Country)
-		fmt.Println(strings.Repeat("-", 10))
-
-		fmt.Println("Current:\t", current.Temperature)
-		fmt.Println("Feels like:\t", current.FeelsLike)
-		fmt.Println("Icon:\t\t", getEmoji(daily.WeatherCode[0]))
-		fmt.Println("Max:\t\t", daily.Max[0])
-		fmt.Println("Min:\t\t", daily.Min[0])
 	} else {
 		fmt.Println("gopen-meteo: No parameter passed.\n\nExample usage:\n\tgopen-meteo \"Berlin\"\n\tgopen-meteo \"New York\"")
 	}
