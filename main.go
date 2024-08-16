@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"flag"
 	"fmt"
 	"io"
 	"log"
@@ -177,26 +178,48 @@ func getEmoji(wmo int) string {
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 func main() {
-	if len(os.Args) > 1 {
-		place := getPlaceGeocode(os.Args[1])
+	var short bool
+	var help bool
 
-		if place == (PlaceGeocode{}) {
-			fmt.Println("Place not found.")
+	flag.BoolVar(&short, "s", false, "Short one line output")
+	flag.BoolVar(&help, "h", false, "Displays help")
+
+	flag.Parse()
+
+	if help {
+		fmt.Println("Example usage:\n\tgopen-meteo \"Berlin\"\n\tgopen-meteo \"New York\"")
+		flag.Usage()
+		os.Exit(0)
+	}
+
+	args := flag.Args()
+
+	if len(args) == 0 {
+		fmt.Println("gopen-meteo: No parameter passed.\n\nExample usage:\n\tgopen-meteo \"Berlin\"\n\tgopen-meteo \"New York\"")
+		os.Exit(1)
+	}
+
+	placeName := args[len(args)-1]
+
+	place := getPlaceGeocode(placeName)
+
+	if place == (PlaceGeocode{}) {
+		fmt.Println("Place not found.")
+	} else {
+		daily := getDailyWeather(place.Latitude, place.Longitude)
+		current := getCurrentWeather(place.Latitude, place.Longitude)
+
+		if short {
+			// icon current (max/min)
+			fmt.Printf("%s %v(%v)°C\n", getEmoji(daily.WeatherCode[0]), current.Temperature, current.FeelsLike)
 		} else {
-			daily := getDailyWeather(place.Latitude, place.Longitude)
-			current := getCurrentWeather(place.Latitude, place.Longitude)
-
-			fmt.Printf("%s, %s\n", place.Name, place.Country)
+			fmt.Printf("%s %s, %s\n", getEmoji(daily.WeatherCode[0]), place.Name, place.Country)
 			fmt.Println(strings.Repeat("-", 10))
 
-			fmt.Println("Current:\t", current.Temperature)
-			fmt.Println("Feels like:\t", current.FeelsLike)
-			fmt.Println("Icon:\t\t", getEmoji(daily.WeatherCode[0]))
-			fmt.Println("Max:\t\t", daily.Max[0])
-			fmt.Println("Min:\t\t", daily.Min[0])
+			fmt.Printf("Current:\t %v°C\n", current.Temperature)
+			fmt.Printf("Feels like:\t %v°C\n", current.FeelsLike)
+			fmt.Printf("Max:\t\t %v°C\n", daily.Max[0])
+			fmt.Printf("Min:\t\t %v°C\n", daily.Min[0])
 		}
-
-	} else {
-		fmt.Println("gopen-meteo: No parameter passed.\n\nExample usage:\n\tgopen-meteo \"Berlin\"\n\tgopen-meteo \"New York\"")
 	}
 }
